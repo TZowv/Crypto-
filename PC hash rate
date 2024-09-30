@@ -1,0 +1,56 @@
+import hashlib
+import time
+
+def measure_hashrate(duration=5):
+    nonce = 0
+    start_time = time.time()
+    hashes = 0
+
+    print(f"Measuring hash rate for {duration} seconds...")
+
+    # Keep hashing until the duration is reached
+    while time.time() - start_time < duration:
+        hashlib.sha256(f"test{nonce}".encode()).hexdigest()  # Perform SHA-256 hashing
+        nonce += 1
+        hashes += 1
+
+    # Calculate hashes per second
+    elapsed_time = time.time() - start_time
+    hash_rate = hashes / elapsed_time
+
+    print(f"Hash rate: {hash_rate:.2f} hashes per second")
+    return hash_rate
+
+# Measure hash rate for 5 seconds
+hashrate = measure_hashrate(duration=10)
+
+def estimate_time_to_find_block(hash_rate, network_difficulty):
+    # Calculate expected number of hashes to find a block
+    expected_hashes = network_difficulty * 2 ** 32  # Bitcoin uses a factor of 2^32 in its calculations
+
+    # Estimate time to find a block (in seconds)
+    time_in_seconds = expected_hashes / hash_rate
+
+    # Convert seconds to more human-readable formats
+    time_in_minutes = time_in_seconds / 60
+    time_in_hours = time_in_minutes / 60
+    time_in_days = time_in_hours / 24
+    time_in_weeks = time_in_days / 7
+    time_in_months = time_in_weeks / 4
+    time_in_years = time_in_months / 12
+
+    print(f"Expected time to find a block:")
+    print(f"{time_in_seconds:.2f} seconds")
+    print(f"Which is approximately:")
+    print(f"{time_in_minutes:.2f} minutes")
+    print(f"{time_in_hours:.2f} hours")
+    print(f"{time_in_days:.2f} days")
+    print(f" {time_in_weeks:.2f} weeks")
+    print(f" {time_in_months:.2f} months")
+    print(f" {time_in_years:.2f} years")
+
+# usage:
+network_difficulty = 8.8e13  # Approximate current Bitcoin network difficulty (Sept 2024 - 88T or 88 trillion)
+hashrate = measure_hashrate(duration=10)  # Your PC's hash rate (hashes per second)
+
+estimate_time_to_find_block(hashrate, network_difficulty)
