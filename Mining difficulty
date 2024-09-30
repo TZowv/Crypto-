@@ -1,0 +1,45 @@
+import hashlib
+import time
+
+def proof_of_work(block_data, difficulty):
+    # Initial nonce value
+    nonce = 0
+    
+    # Convert the difficulty to a target value (hexadecimal number)
+    target = 2 ** (256 - difficulty)
+    
+    print(f"Mining block with difficulty: {difficulty}")
+    
+    # Start timing the process
+    start_time = time.time()
+
+    block_found = False
+    while not block_found:
+        # Hash the block data combined with the nonce
+        block_hash = hashlib.sha256(f"{block_data}{nonce}".encode()).hexdigest()
+        
+        # Convert the hash into an integer for comparison with the target
+        block_hash_int = int(block_hash, 16)
+        
+        # Check if the hash is less than the target
+        if block_hash_int < target:
+            block_found = True
+            end_time = time.time()
+            print(f"Block mined successfully! Hash: {block_hash}")
+            print(f"Nonce: {nonce}")
+            print(f"Time taken: {end_time - start_time:.2f} seconds")
+        else:
+            # Increment nonce and try again
+            nonce += 1
+
+    return block_hash, nonce
+
+# Example block data
+block_data = "Block #1: Some transaction data"
+
+# Running the proof-of-work with two different difficulties
+difficulties = [16, 20]  # Example difficulties to compare
+
+for difficulty in difficulties:
+    print(f"\nRunning Proof-of-Work with difficulty {difficulty}")
+    proof_of_work(block_data, difficulty)
