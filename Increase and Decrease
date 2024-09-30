@@ -1,0 +1,59 @@
+import hashlib
+import time
+
+
+def proof_of_work(block_data, difficulty, expected_block_time):
+    nonce = 0
+    target = 2 ** (256 - difficulty)
+
+    start_time = time.time()
+    block_found = False
+
+    while not block_found:
+        # Hash the block data combined with the nonce
+        block_hash = hashlib.sha256(f"{block_data}{nonce}".encode()).hexdigest()
+        block_hash_int = int(block_hash, 16)
+
+        # Check if the hash is less than the target
+        if block_hash_int < target:
+            end_time = time.time()
+            block_found = True
+            time_taken = end_time - start_time
+            print(f"Block mined successfully! Hash: {block_hash}")
+            print(f"Nonce: {nonce}")
+            print(f"Time taken: {time_taken:.2f} seconds")
+            return time_taken  # Return the time it took to mine the block
+        else:
+            nonce += 1
+
+
+def adjust_difficulty(current_difficulty, time_taken, expected_block_time):
+    # Increase difficulty if the block was mined too fast
+    if time_taken < expected_block_time:
+        new_difficulty = current_difficulty + 1
+        print(f"Block mined too fast. Increasing difficulty to {new_difficulty}")
+    # Decrease difficulty if the block was mined too slowly
+    elif time_taken > expected_block_time:
+        new_difficulty = current_difficulty - 1
+        print(f"Block mined too slow. Decreasing difficulty to {new_difficulty}")
+    else:
+        new_difficulty = current_difficulty
+        print(f"Block mined in expected time. Keeping difficulty at {new_difficulty}")
+
+    return new_difficulty
+
+
+# Initialize difficulty and expected block time (in seconds)
+initial_difficulty = 13  # sets the starting difficulty :))
+expected_block_time = 5  # just change this number to test different times if you want :)
+
+# Simulate mining 5 blocks
+num_blocks = 10            # change this to how many blocks you want to simulate once you run the code :)
+current_difficulty = initial_difficulty
+block_data = "Block #{}: Some transaction data"
+
+for i in range(1, num_blocks + 1):
+    print(f"\nMining block {i} with difficulty {current_difficulty}")
+    time_taken = proof_of_work(block_data.format(i), current_difficulty, expected_block_time)
+    # Adjust difficulty based on the time taken to mine the block
+    current_difficulty = adjust_difficulty(current_difficulty, time_taken, expected_block_time)
